@@ -21,65 +21,38 @@
 #include "TExaS.h"
 #include "tm4c123gh6pm.h"
 
+#include "io.h"
+#include "systick.h"
+
 
 // ***** 2. Global Declarations Section *****
 
 // FUNCTION PROTOTYPES: Each subroutine defined
-void disable_interrupts(void); // Disable interrupts
+void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
-void systick_init(void);
 
-void systick_wait(unsigned long delay);
+
 // ***** 3. Subroutines Section *****
-
-unsigned long a = 0x00000000;
-// first data point is wrong, the other 49 will be correct
-unsigned long Time[50];
-// you must leave the Data array defined exactly as it is
-unsigned long Data[50];
-unsigned long i;
+unsigned long sw1;
+unsigned long led;
 
 int main(void){
-    unsigned long i,last,now;
-
     TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210,ScopeOff); // activate grader and set system clock to 80 MHz
-
-    systick_init(); // initialize SysTick, runs at 16 MHz
-
-
     EnableInterrupts();
+
+    //systick_init(); // initialize SysTick, runs at 16 MHz
+    port_f_init();
+    systick_init();
+
     while(1) {
+        sw1 = GPIO_PORTF_DATA_R & 0x10;
 
-
-        for (i = 0; i < 3; i++)
-            systick_wait(16000000);
-
-        a ^= 0x00000001;
-
-        if(i<50) {
-            now = NVIC_ST_CURRENT_R;
-            Time[i] = (last-now)&0x00FFFFFF;  // 24-bit time difference
-            Data[i] = a; // record PF1
-            last = now;
-            i++;
+        if (sw1) {
+            GPIO_PORTF_DATA_R |= 0x02;
+        }
+        else {
+            GPIO_PORTF_DATA_R ^= 0x02;
+            systick_wait(0x007A1200);
         }
     }
-}
-
-
-// Initialize SysTick with busy wait running at bus clock.
-void systick_init(void){
-    NVIC_ST_CTRL_R = 0;                   // disable SysTick during setup
-    NVIC_ST_RELOAD_R = 0x00FFFFFF;        // maximum reload value
-    NVIC_ST_CURRENT_R = 0;                // any write to current clears it
-    NVIC_ST_CTRL_R = 0x00000005;          // enable SysTick with core clock
-}
-
-void systick_wait(unsigned long delay){
-    volatile unsigned long elapsedTime;
-    unsigned long startTime = NVIC_ST_CURRENT_R;
-    do{
-        elapsedTime = (startTime-NVIC_ST_CURRENT_R)&0x00FFFFFF;
-    }
-    while(elapsedTime <= delay);
 }
