@@ -23,7 +23,7 @@
 
 #include "io.h"
 #include "systick.h"
-
+#include "fsm.h"
 
 // ***** 2. Global Declarations Section *****
 
@@ -33,8 +33,7 @@ void EnableInterrupts(void);  // Enable interrupts
 
 
 // ***** 3. Subroutines Section *****
-unsigned long sw1;
-unsigned long led;
+unsigned long s;  // index to the current state 
 
 int main(void){
     TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210,ScopeOff); // activate grader and set system clock to 80 MHz
@@ -42,17 +41,17 @@ int main(void){
 
     //systick_init(); // initialize SysTick, runs at 16 MHz
     port_f_init();
+    port_b_init();
     systick_init();
 
+    s = go_east;
     while(1) {
-        sw1 = GPIO_PORTF_DATA_R & 0x10;
-
-        if (sw1) {
-            GPIO_PORTF_DATA_R |= 0x02;
-        }
-        else {
-            GPIO_PORTF_DATA_R ^= 0x02;
-            systick_wait(0x007A1200);
-        }
+        GPIO_PORTB_DATA_R = fsm[s].cross_roads;  // set lights
+        GPIO_PORTF_DATA_R = fsm[s].walk_way;  // set lights
+        systick_wait(fsm[s].time);
+        systick_wait(fsm[s].time);
+        //Input = SENSOR;     // read sensors
+        s = fsm[s].next[0];
     }
 }
+
