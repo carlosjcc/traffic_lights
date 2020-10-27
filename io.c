@@ -25,6 +25,7 @@ void port_f_init(void) {
     GPIO_PORTF_DEN_R = 0x0A;          // 7) enable digital I/O on PF4-0
 }
 
+
 void port_b_init(void) {
     volatile unsigned long delay;
     SYSCTL_RCGC2_R |= ACTIVATE_CLOCK_PORT_B;     // 1) activate clock for Port B

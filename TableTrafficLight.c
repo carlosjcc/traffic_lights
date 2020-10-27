@@ -44,10 +44,9 @@ int main(void){
     port_b_init();
     systick_init();
 
-    s = go_east;
+    s = GO_EAST;
     while(1) {
-        GPIO_PORTB_DATA_R = fsm[s].cross_roads;  // set lights
-        GPIO_PORTF_DATA_R = fsm[s].walk_way;  // set lights
+        (fsm[s].set_lights)();
         systick_wait(fsm[s].time);
         systick_wait(fsm[s].time);
         //Input = SENSOR;     // read sensors
