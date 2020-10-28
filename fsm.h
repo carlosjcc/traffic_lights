@@ -19,6 +19,7 @@ void wait_east(void);
 void go_north(void);
 void wait_north(void);
 void walk(void);
+unsigned long read_sensors(void);
 void fsm_controller(void);
 
 

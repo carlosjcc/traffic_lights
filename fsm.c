@@ -38,8 +38,13 @@ void walk(void){
     GPIO_PORTF_DATA_R = 0x08;
 }
 
+unsigned long read_sensors(void) {
+    return GPIO_PORTE_DATA_R;
+}
+
 void fsm_controller(void) {
     unsigned long s;  // index to the current state
+    unsigned long sensors;
     
     const state fsm[5] = {
         {&go_east, 0x00FFFFFF, {WAIT_EAST}},
@@ -49,15 +54,21 @@ void fsm_controller(void) {
         {&walk, 0x00FFFFFF, {GO_EAST}}
     };
 
-    port_f_init();
+
     port_b_init();
+    port_e_init();
+    port_f_init();
     systick_init();
 
     s = GO_EAST;
     while(1) {
+        
+        sensors = read_sensors();
+        
         (fsm[s].set_lights)();
         systick_wait(fsm[s].time);
         systick_wait(fsm[s].time);
+        
         s = fsm[s].next[0];
     }
 }
