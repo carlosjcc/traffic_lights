@@ -21,8 +21,7 @@
 #include "TExaS.h"
 #include "tm4c123gh6pm.h"
 
-#include "io.h"
-#include "systick.h"
+
 #include "fsm.h"
 
 // ***** 2. Global Declarations Section *****
@@ -33,24 +32,13 @@ void EnableInterrupts(void);  // Enable interrupts
 
 
 // ***** 3. Subroutines Section *****
-unsigned long s;  // index to the current state 
+
 
 int main(void){
     TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210,ScopeOff); // activate grader and set system clock to 80 MHz
     EnableInterrupts();
 
-    //systick_init(); // initialize SysTick, runs at 16 MHz
-    port_f_init();
-    port_b_init();
-    systick_init();
 
-    s = GO_EAST;
-    while(1) {
-        (fsm[s].set_lights)();
-        systick_wait(fsm[s].time);
-        systick_wait(fsm[s].time);
-        //Input = SENSOR;     // read sensors
-        s = fsm[s].next[0];
-    }
+    fsm_controller();
 }
 
