@@ -38,7 +38,6 @@ int main(void){
     TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210,ScopeOff); // activate grader and set system clock to 80 MHz
     EnableInterrupts();
 
-
     fsm_controller();
 }
 
