@@ -8,6 +8,12 @@
 #define GO_NORTH   2
 #define WAIT_NORTH 3
 #define WALK 4
+#define BLINK_1 5
+#define BLINK_2 6
+#define BLINK_3 7
+#define BLINK_4 8
+#define BLINK_5 9
+#define BLINK_6 10
 
 void go_east(void){
     GPIO_PORTB_DATA_R = 0x0C;
@@ -26,6 +32,10 @@ void go_north(void){
 
 void wait_north(void){
     GPIO_PORTB_DATA_R = 0x22;
+}
+
+void no_cars(void){
+        GPIO_PORTB_DATA_R = 0x24;
 }
 
 
@@ -50,7 +60,7 @@ void fsm_controller(void) {
         {&wait_east, &no_walk, 0x00FFFFFF, {GO_NORTH}},
         {&go_north, &no_walk, 0x00FFFFFF, {WAIT_NORTH}},
         {&wait_north, &no_walk, 0x00FFFFFF, {WALK}},
-        {&walk, &walk, 0x00FFFFFF, {GO_EAST}}
+        {&no_cars, &walk, 0x00FFFFFF, {GO_EAST}}
     };
 
 

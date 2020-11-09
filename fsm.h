@@ -19,6 +19,7 @@ void go_east(void);
 void wait_east(void);
 void go_north(void);
 void wait_north(void);
+void no_cars(void);
 void walk(void);
 void no_walk(void);
 unsigned long read_sensors(void);
