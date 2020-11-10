@@ -11,7 +11,7 @@ typedef struct state_struct {
     void (*pedestrian_lights)(void);
     unsigned long time;
     //unsigned long next[5];
-    unsigned long next[1];
+    unsigned long next[8];
 } state;
 
 
