@@ -43,10 +43,14 @@ void no_cars_dont_walk(void){
     GPIO_PORTB_DATA_R = 0x24;
     GPIO_PORTF_DATA_R = 0x02;
 }
+
+
 void no_cars_walk(void){
     GPIO_PORTB_DATA_R = 0x24;
     GPIO_PORTF_DATA_R = 0x08;
 }
+
+
 void no_cars_walk_off(void){
     GPIO_PORTB_DATA_R = 0x24;
     GPIO_PORTF_DATA_R = 0x00;
@@ -62,17 +66,17 @@ void fsm_controller(void) {
     unsigned long sensors;
     
     const state fsm[11] = {
-        {&go_east, 0x00FFFFFF,    {GO_EAST,GO_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST}},
-        {&wait_east, 0x00FFFFFF,  {GO_EAST,GO_NORTH,GO_NORTH,GO_NORTH,WALK,WALK,WALK,GO_NORTH}},
-        {&go_north, 0x00FFFFFF,   {GO_NORTH,WAIT_NORTH,GO_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH}},
-        {&wait_north, 0x00FFFFFF, {GO_NORTH,GO_EAST,GO_NORTH,GO_EAST,WALK,WALK,WALK,WALK}},
-        {&no_cars_walk, 0x00FFFFFF,       {WALK,BLINK_1,BLINK_1,BLINK_1,WALK,BLINK_1,BLINK_1,BLINK_1}},
-        {&no_cars_dont_walk, 0x00FFFFFF,    {WALK,BLINK_2,BLINK_2,BLINK_2,WALK,BLINK_2,BLINK_2,BLINK_2}},
-        {&no_cars_walk_off, 0x00FFFFFF,   {WALK,BLINK_3,BLINK_3,BLINK_3,WALK,BLINK_3,BLINK_3,BLINK_3}},
-        {&no_cars_dont_walk, 0x00FFFFFF,    {WALK,BLINK_4,BLINK_4,BLINK_4,WALK,BLINK_4,BLINK_4,BLINK_4}},
-        {&no_cars_walk_off, 0x00FFFFFF,   {WALK,BLINK_5,BLINK_5,BLINK_5,WALK,BLINK_5,BLINK_5,BLINK_5}},
-        {&no_cars_dont_walk, 0x00FFFFFF,    {WALK,BLINK_6,BLINK_6,BLINK_6,WALK,BLINK_6,BLINK_6,BLINK_6}},
-        {&no_cars_walk_off, 0x00FFFFFF,   {WALK,GO_EAST,GO_NORTH,GO_EAST,WALK,GO_EAST,GO_NORTH,GO_EAST}},
+        {&go_east,           5,  {GO_EAST,GO_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST,WAIT_EAST}},
+        {&wait_east,         5,  {GO_EAST,GO_NORTH,GO_NORTH,GO_NORTH,WALK,WALK,WALK,GO_NORTH}},
+        {&go_north,          5,  {GO_NORTH,WAIT_NORTH,GO_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH,WAIT_NORTH}},
+        {&wait_north,        5,  {GO_NORTH,GO_EAST,GO_NORTH,GO_EAST,WALK,WALK,WALK,WALK}},
+        {&no_cars_walk,      5,  {WALK,BLINK_1,BLINK_1,BLINK_1,WALK,BLINK_1,BLINK_1,BLINK_1}},
+        {&no_cars_dont_walk, 1,  {WALK,BLINK_1,BLINK_1,BLINK_1,WALK,BLINK_1,BLINK_1,BLINK_1}},
+        {&no_cars_walk_off,  1,  {WALK,BLINK_3,BLINK_3,BLINK_3,WALK,BLINK_3,BLINK_3,BLINK_3}},
+        {&no_cars_dont_walk, 1,  {WALK,BLINK_4,BLINK_4,BLINK_4,WALK,BLINK_4,BLINK_4,BLINK_4}},
+        {&no_cars_walk_off,  1,  {WALK,BLINK_5,BLINK_5,BLINK_5,WALK,BLINK_5,BLINK_5,BLINK_5}},
+        {&no_cars_dont_walk, 1,  {WALK,BLINK_6,BLINK_6,BLINK_6,WALK,BLINK_6,BLINK_6,BLINK_6}},
+        {&no_cars_walk_off,  1,  {WALK,GO_EAST,GO_NORTH,GO_EAST,WALK,GO_EAST,GO_NORTH,GO_EAST}},
     };
 
 
@@ -85,11 +89,8 @@ void fsm_controller(void) {
     while(1) {
         
         sensors = read_sensors();
-        
         (fsm[s].traffic_lights)();
-        systick_wait(fsm[s].time);
-        systick_wait(fsm[s].time);
-        
+        systick_100ms(fsm[s].time);
         s = fsm[s].next[sensors];
     }
 }

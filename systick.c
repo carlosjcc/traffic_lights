@@ -15,3 +15,15 @@ void systick_wait(unsigned long delay) {
     NVIC_ST_CURRENT_R = 0;       // any value written to CURRENT clears
     while((NVIC_ST_CTRL_R&0x00010000)==0);
 }
+
+
+void systick_100ms(unsigned long n) {
+    unsigned long i;
+
+    NVIC_ST_RELOAD_R = 0x007A1443-1;  // number of counts to wait
+    NVIC_ST_CURRENT_R = 0;       // any value written to CURRENT clears
+
+    for (i = 0; i < n; i++) {
+        while((NVIC_ST_CTRL_R&0x00010000)==0);
+    }
+}

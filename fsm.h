@@ -6,7 +6,6 @@
 typedef struct state_struct {
     void (*traffic_lights)(void);
     unsigned long time;
-    //unsigned long next[5];
     unsigned long next[8];
 } state;
 

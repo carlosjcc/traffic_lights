@@ -8,4 +8,6 @@ void systick_init(void);
 
 void systick_wait(unsigned long delay);
 
+void systick_100ms(unsigned long n);
+
 #endif
